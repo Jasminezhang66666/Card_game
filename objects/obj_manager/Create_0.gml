@@ -1,6 +1,9 @@
 score_enemy = 0;
 score_player = 0;
 
+ene = 0;
+ply = 0;
+
 shuffle_time = 60;
 dealing_time = 240;
 decision_time = 120;

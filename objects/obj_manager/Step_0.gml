@@ -1,6 +1,7 @@
 if (phase_shuffle) {
 	if (timer == shuffle_time) {		
 		ds_list_shuffle(cards)
+		show_debug_message("cards has " + string(ds_list_size(cards_discard)))
 		//shuffle the cards and display the card pile on the left
 		for (var i = 0; i < ds_list_size(cards); i ++) {
 			cards[|i].x = 130;	
@@ -46,7 +47,6 @@ if (phase_dealing) {
 		ds_list_delete(cards,3);
 		ds_list_delete(cards,4);
 		ds_list_delete(cards,5);
-		show_debug_message("The length is: " + string(ds_list_size(cards)));
 	} else if (timer <= 0) {
 		phase_decision = true;
 		phase_dealing = false;
@@ -57,7 +57,7 @@ if (phase_dealing) {
 if (phase_decision) {
 	if (timer == decision_time) {	
 		//enemy making decision
-		var ene = irandom_range(0,2); //random card, and put it into the center
+		ene = irandom_range(0,2); //random card, and put it into the center
 		hand_enemy[|ene].x = 600;
 		hand_enemy[|ene].y = 375;
 	}
@@ -67,7 +67,7 @@ if (phase_decision) {
 		if (mouse_x > c.x && mouse_x < (c.x+c.sprite_width) && mouse_y > c.y && mouse_y < (c.y+c.sprite_height)) {
 			c.y = 865;
 			if (mouse_check_button_pressed(mb_left)) { //and player selected the card
-				var ply = i;
+				ply = i;
 				c.x = 600;
 				c.y = 625;
 				player_selected = true;
@@ -86,16 +86,54 @@ if (phase_decision) {
 
 if (phase_scoring) {
 	if (timer == scoring_time) {		
-		//flip the card
+		//flip the enemy card
 		
 		
 		//see who wins and adds score
+		var ene_car = object_get_name(hand_enemy[|ene].object_index);
+		var ply_car = object_get_name(hand_player[|ply].object_index);
 		
+		if (ene_car == ply_car) { //tie
+		} else if ((ene_car=="obj_rock" && ply_car=="obj_scissor") || (ene_car=="obj_scissor" && ply_car=="obj_paper") || (ene_car=="obj_paper" && ply_car=="obj_rock")) { //enemy win
+			score_enemy ++;
+		} else { //player win
+			score_player ++;
+		}
 		
 	} else if (timer <= 0) {
 		phase_discard = true;
 		phase_scoring = false;
 		timer = discard_time;
+	}
+}
+
+if (phase_discard) {
+	if (timer == discard_time) {
+		//put the middle ones into discard piles first
+		ds_list_add(cards_discard,hand_enemy[|ene]);
+		ds_list_add(cards_discard,hand_player[|ply]);
+		ds_list_delete(hand_enemy,ene);
+		ds_list_delete(hand_player,ply);
+		//and the from the bottom to down, from the right to left
+		ds_list_add(cards_discard,hand_enemy[|1]);
+		ds_list_add(cards_discard,hand_enemy[|0]);
+		ds_list_add(cards_discard,hand_player[|1]);
+		ds_list_add(cards_discard,hand_player[|0]);
+		ds_list_clear(hand_enemy);
+		ds_list_clear(hand_player);
+	
+		show_debug_message("miaomiao" + string(ds_list_size(cards_discard)))
+	
+		//arrange the discard pile
+		for (var i = 0; i < ds_list_size(cards_discard); i ++) {
+			cards_discard[|i].x = 1000;	
+			cards_discard[|i].y = 650 - (8*i);
+			cards_discard[|i].depth = ds_list_size(cards_discard)-i;
+		}
+	} else if (timer <= 0) {
+		phase_shuffle = true;
+		phase_discard = false;
+		timer = shuffle_time + 1;
 	}
 }
 
