@@ -22,6 +22,8 @@ if (phase_dealing) {
 	cards[|0].y+=(target_position[1]-cards[|0].y)*lerp_speed;
 
 	if (abs(cards[|0].x-(target_position[0]))<0.2) {
+		audio_play_sound(snd_transfer,0,false);
+		
 		if (ds_list_size(hand_enemy)<3) {
 			ds_list_add(hand_enemy,cards[|0]);
 			target_position[0] += 200;
@@ -69,10 +71,9 @@ if (phase_decision) {
 			c.y = 865;
 			if (mouse_check_button_pressed(mb_left)) { //and player selected the card
 				ply = i;
-				//c.x = 600;
-				//c.y = 625;
 				player_selected = true;
 				hand_enemy[|ene].back = false;
+				audio_play_sound(snd_flip,0,false);
 			}
 		} else if (!player_selected) {
 			c.y = 900;
@@ -146,6 +147,7 @@ if (phase_discard) {
 	current.depth = target_depth;
 	
 	if (abs(current.x-(target_position[0]))<0.2) {
+		audio_play_sound(snd_transfer,0,false);
 		target_position[1] -= 8;
 		target_depth -= 1;
 		ds_list_add(cards_discard, current);
@@ -181,7 +183,7 @@ if (phase_transfer) {
 	
 	if (abs(cards_discard[|loc].x-(target_position[0]))<0.2) {
 		//SOUND: pupu
-		
+		audio_play_sound(snd_transfer,0,false);
 		target_depth -= 1;
 		ds_list_add(cards,cards_discard[|loc]);
 		ds_list_delete(cards_discard,loc);
