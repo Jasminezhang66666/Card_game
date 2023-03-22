@@ -24,3 +24,5 @@ globalvar phase_scoring;
 phase_scoring = false;
 globalvar phase_discard;
 phase_discard = false;
+globalvar phase_transfer;
+phase_transfer = false;
